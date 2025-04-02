@@ -1,24 +1,32 @@
 package com.mayab.desarrollo.main;
 
-import org.hibernate.Session;
+import java.util.List;
 
 import com.mayab.desarrollo.entities.Usuario;
+import com.mayab.desarrollo.persistence.UserDao;
+import com.mayab.desarrollo.servicios.LoginServicio;
 
 public class Test {
 
-	public static void main(String[] args) {
-		Session session = HibernateUtil.getSessionFactory().openSession();
-		session.beginTransaction();
+    public static void main(String[] args) {
 
-		//Add new user object
-		Usuario user = new Usuario();
-		user.setNombre("Usuario1");
-		user.setPassword("password");
-		user.setEmail("email@email.com");
+        UserDao dao = new UserDao();
+        LoginServicio servicio = new LoginServicio(dao);
 
-		session.save(user);
+        Usuario usuario1 = servicio.createUser("username1", "pass", "email");
+        Usuario usario2 = servicio.createUser("username2", "pass2", "email2");
 
-		session.getTransaction().commit();
-		HibernateUtil.shutdown();
-	}
+        servicio.updatePass(usuario1, "otropass");
+        List<Usuario> lista = (List<Usuario>) servicio.findAll();
+        for (Usuario usuario : lista) {
+            System.out.println(usuario.toString());
+        }
+        servicio.deleteUser(1);
+        lista = (List<Usuario>) servicio.findAll();
+        for (Usuario usuario : lista) {
+            System.out.println(usuario.toString());
+        }
+
+    }
+
 }
